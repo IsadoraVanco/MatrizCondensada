@@ -14,14 +14,15 @@ struct cel{
 };
 typedef struct cel elemento;
 
-void EscreverMatriz(elemento *inicio);
-void ApagarMatriz(elemento *inicio);
 elemento* LerMatriz(FILE *arquivo);
+void EscreverMatriz(elemento *inicio);
+elemento* SomarMatrizes(elemento *inicioA, elemento *inicioB);
+void ApagarMatriz(elemento *inicio);
 
 int main() {
-    
     elemento* inicioA = NULL;
     elemento* inicioB = NULL;
+    elemento* inicioC = NULL;
 
     FILE *arquivo;
     arquivo = fopen(NOME_ARQUIVO, "r");
@@ -32,59 +33,27 @@ int main() {
 
     inicioA = LerMatriz(arquivo);
     inicioB = LerMatriz(arquivo);
-    
-    printf("A\n");
-    EscreverMatriz(inicioA);
-    ApagarMatriz(inicioA);
-    
-    printf("B\n");
-    EscreverMatriz(inicioB);
-    ApagarMatriz(inicioB);
-    
     fclose(arquivo);
+
+    
+    printf("\n*****A*****\n");
+    EscreverMatriz(inicioA);
+    
+    printf("*****B*****\n");
+    EscreverMatriz(inicioB);
+    
+    printf("*****C*****\n");
+    //soma e escreve a matriz resultante
+    inicioC = SomarMatrizes(inicioA, inicioB);
+    
+    ApagarMatriz(inicioA);
+    ApagarMatriz(inicioB);
+    ApagarMatriz(inicioC);
     
     return 0;
 }
 
-void EscreverMatriz(elemento *inicio){
-    for(int i = 0; i < N; i++){
-        for(int j = 0; j < N; j++){
-
-            if(inicio -> i == i && inicio -> j == j && inicio -> valor != 0){
-                printf("%d ", inicio -> valor);
-                if(inicio -> proxElemento != NULL){
-                    inicio = inicio -> proxElemento;
-                }
-            }else{
-                printf("%d ", 0);
-            }
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-
-void ApagarMatriz(elemento *inicio){
-    elemento *proximo, *elemento;
-    
-    //recebe o endereço do primeiro elemento
-    proximo = inicio;
-
-    //percorre toda lista até achar o ultimo elemento (NULL)
-    while(proximo != NULL){
-        //recebe o endereço do elemento 
-        elemento = proximo;
-        //recebe o endereço do proximo elemento
-        proximo = proximo -> proxElemento;
-        //apaga o elemento
-        free(elemento);
-    }
-    //aterra o ponteiro do inicio
-    inicio = NULL;
-    printf("Matriz apagada.\n");
-}
-
-//guarda a matriz já condensada
+//guarda a matriz já condensada e retorna o ponteiro do inicio
 elemento* LerMatriz(FILE *arquivo){
     char linha[N + 1];
     int n;
@@ -125,4 +94,106 @@ elemento* LerMatriz(FILE *arquivo){
 
     //retorna apenas o ponteiro do primeiro elemento
     return inicio;
+}
+
+//escreve as informações da matriz condensada e a matriz completa
+void EscreverMatriz(elemento *inicio){
+    elemento* aux = inicio;
+    
+    printf("Matriz Condensada:\n");
+    //escreve a matriz condensada
+    while(inicio != NULL){
+        printf("%d [%d, %d]\n", inicio -> valor, inicio -> i + 1, inicio -> j + 1);
+        inicio = inicio -> proxElemento;
+    }
+    printf("\n");
+
+    //retorna o ponteiro para o inicio (passado como parametro)
+    inicio = aux;
+
+    printf("Matriz Completa:\n");
+    //escreve a matriz inteira (com elementos 0)
+    for(int i = 0; i < N; i++){
+        for(int j = 0; j < N; j++){
+            if(inicio -> i == i && inicio -> j == j && inicio -> valor != 0){
+                printf("%d ", inicio -> valor);
+                if(inicio -> proxElemento != NULL){
+                    inicio = inicio -> proxElemento;
+                }
+            }else{
+                printf("%d ", 0);
+            }
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+//soma as duas matrizes, escreve e retorna o ponteiro do inicio dela
+elemento* SomarMatrizes(elemento *inicioA, elemento *inicioB){
+    elemento *inicioC = NULL;
+    elemento *elementoAnterior, *novoElemento;
+    int c;
+
+    for(int i = 0; i < N; i++){
+        for(int j = 0; j < N; j++){
+            c = 0;
+            
+            if(inicioA -> i == i && inicioA -> j == j){
+                c += inicioA -> valor;
+                if(inicioA -> proxElemento != NULL){
+                    inicioA = inicioA -> proxElemento;
+                }
+            }
+            if(inicioB -> i == i && inicioB -> j == j){
+                c += inicioB -> valor;
+                if(inicioB -> proxElemento != NULL){
+                    inicioB = inicioB -> proxElemento;
+                }
+            }
+
+            if(c != 0){
+                novoElemento = malloc(sizeof(elemento));
+                novoElemento -> valor = c;
+                novoElemento -> i = i;
+                novoElemento -> j = j;
+                novoElemento -> proxElemento = NULL;
+                
+                // se o inicio ainda não aponta para algum endereço
+                // ou seja, é o primeiro elemento identificado,
+                // atribui o endereço do primeiro para o inicio
+                if(inicioC == NULL){
+                    inicioC = novoElemento;
+                    elementoAnterior = novoElemento;
+                }else{ //caso haja elementos existentes
+                    elementoAnterior -> proxElemento = novoElemento;
+                    elementoAnterior = novoElemento;
+                }
+            }
+        }
+    }
+
+    EscreverMatriz(inicioC);
+    return inicioC;
+}
+
+//apaga a matriz passada como parametro
+void ApagarMatriz(elemento *inicio){
+    elemento *proximo, *elemento;
+    
+    //recebe o endereço do primeiro elemento
+    proximo = inicio;
+
+    //percorre toda lista até achar o ultimo elemento (NULL)
+    while(proximo != NULL){
+        //recebe o endereço do elemento 
+        elemento = proximo;
+        //recebe o endereço do proximo elemento
+        proximo = proximo -> proxElemento;
+        //apaga o elemento
+        free(elemento);
+    }
+    //aterra o ponteiro do inicio
+    inicio = NULL;
+    printf("Matriz apagada.\n");
 }
