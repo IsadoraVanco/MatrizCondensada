@@ -14,8 +14,9 @@ struct cel{
 };
 typedef struct cel elemento;
 
-elemento* LerMatriz(FILE *arquivo);
+void EscreverMatriz(elemento *inicio);
 void ApagarMatriz(elemento *inicio);
+elemento* LerMatriz(FILE *arquivo);
 
 int main() {
     
@@ -29,16 +30,58 @@ int main() {
         return 1;
     }
 
-    printf("A\n");
     inicioA = LerMatriz(arquivo);
-    printf("B\n");
     inicioB = LerMatriz(arquivo);
-    fclose(arquivo);
     
+    printf("A\n");
+    EscreverMatriz(inicioA);
     ApagarMatriz(inicioA);
+    
+    printf("B\n");
+    EscreverMatriz(inicioB);
     ApagarMatriz(inicioB);
     
+    fclose(arquivo);
+    
     return 0;
+}
+
+void EscreverMatriz(elemento *inicio){
+    for(int i = 0; i < N; i++){
+        for(int j = 0; j < N; j++){
+
+            if(inicio -> i == i && inicio -> j == j && inicio -> valor != 0){
+                printf("%d ", inicio -> valor);
+                if(inicio -> proxElemento != NULL){
+                    inicio = inicio -> proxElemento;
+                }
+            }else{
+                printf("%d ", 0);
+            }
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+void ApagarMatriz(elemento *inicio){
+    elemento *proximo, *elemento;
+    
+    //recebe o endereço do primeiro elemento
+    proximo = inicio;
+
+    //percorre toda lista até achar o ultimo elemento (NULL)
+    while(proximo != NULL){
+        //recebe o endereço do elemento 
+        elemento = proximo;
+        //recebe o endereço do proximo elemento
+        proximo = proximo -> proxElemento;
+        //apaga o elemento
+        free(elemento);
+    }
+    //aterra o ponteiro do inicio
+    inicio = NULL;
+    printf("Matriz apagada.\n");
 }
 
 //guarda a matriz já condensada
@@ -82,24 +125,4 @@ elemento* LerMatriz(FILE *arquivo){
 
     //retorna apenas o ponteiro do primeiro elemento
     return inicio;
-}
-
-void ApagarMatriz(elemento *inicio){
-    elemento *proximo, *elemento;
-    
-    //recebe o endereço do primeiro elemento
-    proximo = inicio;
-
-    //percorre toda lista até achar o ultimo elemento (NULL)
-    while(proximo != NULL){
-        //recebe o endereço do elemento 
-        elemento = proximo;
-        //recebe o endereço do proximo elemento
-        proximo = proximo -> proxElemento;
-        //apaga o elemento
-        free(elemento);
-    }
-    //aterra o ponteiro do inicio
-    inicio = NULL;
-    printf("Matriz apagada.\n");
 }
