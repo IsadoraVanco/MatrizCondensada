@@ -17,14 +17,16 @@ typedef struct cel elemento;
 elemento* LerMatriz(FILE *arquivo);
 void EscreverMatriz(elemento *inicio);
 elemento* SomarMatrizes(elemento *inicioA, elemento *inicioB);
+int SomarElementosAbaixoDiagonal(elemento *inicio);
 void ApagarMatriz(elemento *inicio);
 
 int main() {
     elemento* inicioA = NULL;
     elemento* inicioB = NULL;
     elemento* inicioC = NULL;
-
     FILE *arquivo;
+    int elementosC;
+    
     arquivo = fopen(NOME_ARQUIVO, "r");
     if(arquivo == NULL){
         printf("Arquivo %s nao encontrado.", NOME_ARQUIVO);
@@ -34,7 +36,6 @@ int main() {
     inicioA = LerMatriz(arquivo);
     inicioB = LerMatriz(arquivo);
     fclose(arquivo);
-
     
     printf("\n*****A*****\n");
     EscreverMatriz(inicioA);
@@ -45,6 +46,8 @@ int main() {
     printf("*****C*****\n");
     //soma e escreve a matriz resultante
     inicioC = SomarMatrizes(inicioA, inicioB);
+    elementosC = SomarElementosAbaixoDiagonal(inicioC);
+    printf("\n");
     
     ApagarMatriz(inicioA);
     ApagarMatriz(inicioB);
@@ -175,6 +178,24 @@ elemento* SomarMatrizes(elemento *inicioA, elemento *inicioB){
 
     EscreverMatriz(inicioC);
     return inicioC;
+}
+
+//soma os elementos abaixo da diagonal principal
+int SomarElementosAbaixoDiagonal(elemento *inicio){
+    int resultado = 0;
+
+    while(inicio != NULL){
+        //se o elemento estiver na diagonal ou abaixo dela
+        if(inicio -> j < inicio -> i){
+            resultado += inicio -> valor;
+            inicio = inicio -> proxElemento;
+        }else{
+            inicio = inicio -> proxElemento;
+        }
+    }
+
+    printf("O resultado da soma de todos os elementos abaixo da diagonal principal da matriz eh %d.\n", resultado);
+    return resultado;
 }
 
 //apaga a matriz passada como parametro
