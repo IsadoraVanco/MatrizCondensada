@@ -19,6 +19,8 @@ void EscreverMatriz(elemento *inicio);
 elemento* SomarMatrizes(elemento *inicioA, elemento *inicioB);
 elemento* MultiplicarMatrizes(elemento *inicioA, elemento *inicioB);
 int SomarElementosAbaixoDiagonal(elemento *inicio);
+void AdicionarElementoNoFim(elemento* inicio, int n, int i, int j);
+void AdicionarPrimeiroElemento(elemento **inicio, int valor, int i, int j);
 void ApagarMatriz(elemento *inicio);
 
 int main() {
@@ -62,12 +64,10 @@ int main() {
 
 //guarda a matriz já condensada e retorna o ponteiro do inicio
 elemento* LerMatriz(FILE *arquivo){
+    elemento *inicio = NULL;
     char linha[N + 1];
     int n;
     
-    elemento *inicio = NULL;
-    elemento *elementoAnterior, *novoElemento;
-
     //considere a matriz sem erros!
     for(int i = 0; i < N; i++){
         //le com ou sem uma linha separando (espaço)
@@ -77,26 +77,13 @@ elemento* LerMatriz(FILE *arquivo){
             //transforma o caractere em inteiro
             n = linha[j] - '0';
             if(n != 0){
-                // printf("%d ", n);
-                novoElemento = malloc(sizeof(elemento));
-                novoElemento -> valor = n;
-                novoElemento -> i = i;
-                novoElemento -> j = j;
-                novoElemento -> proxElemento = NULL;
-                
-                // se o inicio ainda não aponta para algum endereço
-                // ou seja, é o primeiro elemento identificado,
-                // atribui o endereço do primeiro para o inicio
                 if(inicio == NULL){
-                    inicio = novoElemento;
-                    elementoAnterior = novoElemento;
+                    AdicionarPrimeiroElemento(&inicio, n, i, j);
                 }else{ //caso haja elementos existentes
-                    elementoAnterior -> proxElemento = novoElemento;
-                    elementoAnterior = novoElemento;
+                    AdicionarElementoNoFim(inicio, n, i, j);
                 }
             }
         }
-        // printf("\n");
     }
 
     //retorna apenas o ponteiro do primeiro elemento
@@ -160,21 +147,10 @@ elemento* SomarMatrizes(elemento *inicioA, elemento *inicioB){
             }
 
             if(c != 0){
-                novoElemento = malloc(sizeof(elemento));
-                novoElemento -> valor = c;
-                novoElemento -> i = i;
-                novoElemento -> j = j;
-                novoElemento -> proxElemento = NULL;
-                
-                // se o inicio ainda não aponta para algum endereço
-                // ou seja, é o primeiro elemento identificado,
-                // atribui o endereço do primeiro para o inicio
                 if(inicioC == NULL){
-                    inicioC = novoElemento;
-                    elementoAnterior = novoElemento;
+                    AdicionarPrimeiroElemento(&inicioC, c, i, j);
                 }else{ //caso haja elementos existentes
-                    elementoAnterior -> proxElemento = novoElemento;
-                    elementoAnterior = novoElemento;
+                    AdicionarElementoNoFim(inicioC, c, i, j);
                 }
             }
         }
@@ -190,7 +166,6 @@ elemento* MultiplicarMatrizes(elemento *inicioA, elemento *inicioB){
     elemento *auxB = inicioB; //guarda o endereço inicial de B
     
     elemento *inicioC = NULL;
-    elemento *elementoAnterior, *novoElemento;
 
     int somaElemento, multiplicacaoElemento;
 
@@ -229,21 +204,10 @@ elemento* MultiplicarMatrizes(elemento *inicioA, elemento *inicioB){
             }
 
             if(somaElemento != 0){ //armazena na lista ligada
-                novoElemento = malloc(sizeof(elemento));
-                novoElemento -> valor = somaElemento;
-                novoElemento -> i = i;
-                novoElemento -> j = j;
-                novoElemento -> proxElemento = NULL;
-                
-                // se o inicio ainda não aponta para algum endereço
-                // ou seja, é o primeiro elemento identificado,
-                // atribui o endereço do primeiro para o inicio
                 if(inicioC == NULL){
-                    inicioC = novoElemento;
-                    elementoAnterior = novoElemento;
+                    AdicionarPrimeiroElemento(&inicioC, somaElemento, i, j);
                 }else{ //caso haja elementos existentes
-                    elementoAnterior -> proxElemento = novoElemento;
-                    elementoAnterior = novoElemento;
+                    AdicionarElementoNoFim(inicioC, somaElemento, i, j);
                 }
             }
         }
@@ -271,6 +235,33 @@ int SomarElementosAbaixoDiagonal(elemento *inicio){
     return resultado;
 }
 
+//adiciona um novo elemento na lista ligada
+void AdicionarElementoNoFim(elemento* inicio, int valor, int i, int j){
+    elemento *novoElemento;
+    elemento *elementoAnterior = inicio;
+
+    while(elementoAnterior -> proxElemento != NULL){ //procura o ultimo elemento
+        elementoAnterior = elementoAnterior -> proxElemento;
+    }
+
+    novoElemento = malloc(sizeof(elemento));
+    novoElemento -> valor = valor;
+    novoElemento -> i = i;
+    novoElemento -> j = j;
+    novoElemento -> proxElemento = NULL;
+    
+    elementoAnterior -> proxElemento = novoElemento;
+}
+
+void AdicionarPrimeiroElemento(elemento **inicio, int valor, int i, int j){
+    elemento *novoElemento = malloc(sizeof(elemento));
+
+    novoElemento -> valor = valor;
+    novoElemento -> i = i;
+    novoElemento -> j = j;
+    novoElemento -> proxElemento = (*inicio);
+    (*inicio) = novoElemento;
+}
 //apaga a matriz passada como parametro
 void ApagarMatriz(elemento *inicio){
     elemento *proximo, *elemento;
