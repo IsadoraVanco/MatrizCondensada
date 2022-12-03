@@ -4,7 +4,7 @@
 
 //sempre quadrada
 #define N 15
-#define NOME_ARQUIVO "matrizes5.txt"
+#define NOME_ARQUIVO "matrizes.txt"
 
 typedef struct cel{
     int valor;
@@ -28,6 +28,8 @@ int main() {
     elemento* inicioC = NULL;
     elemento* inicioD = NULL;
     FILE *arquivo;
+
+    int totalElementosDiagonal = 0;
     
     arquivo = fopen(NOME_ARQUIVO, "r");
     if(arquivo == NULL){
@@ -38,24 +40,26 @@ int main() {
     printf("\n*****A*****\n");
     inicioA = LerMatriz(arquivo);
     EscreverMatriz(inicioA);
-    SomarElementosAbaixoDiagonal(inicioA);
+    totalElementosDiagonal += SomarElementosAbaixoDiagonal(inicioA);
     
     printf("\n*****B*****\n");
     inicioB = LerMatriz(arquivo);
     EscreverMatriz(inicioB);
-    SomarElementosAbaixoDiagonal(inicioB);
+    totalElementosDiagonal += SomarElementosAbaixoDiagonal(inicioB);
     
     fclose(arquivo);
     
     printf("\n*****C*****\n");
     inicioC = SomarMatrizes(inicioA, inicioB);
-    SomarElementosAbaixoDiagonal(inicioC);
+    totalElementosDiagonal += SomarElementosAbaixoDiagonal(inicioC);
     
     printf("\n*****D*****\n");
     inicioD = MultiplicarMatrizes(inicioA, inicioB);
-    SomarElementosAbaixoDiagonal(inicioD);
-    printf("\n");
+    totalElementosDiagonal += SomarElementosAbaixoDiagonal(inicioD);
     
+    printf("\nA soma de todas as soma de elementos abaixo da diagonal calculados eh de %d.\n", totalElementosDiagonal);
+    printf("\n");
+
     ApagarMatriz(inicioA);
     ApagarMatriz(inicioB);
     ApagarMatriz(inicioC);
@@ -267,6 +271,7 @@ void AdicionarElementoNoFim(elemento* inicio, int valor, int i, int j){
     elementoAnterior -> proxElemento = novoElemento;
 }
 
+//adiciona o primeiro elemento na lista
 void AdicionarPrimeiroElemento(elemento **inicio, int valor, int i, int j){
     elemento *novoElemento = malloc(sizeof(elemento));
 
@@ -276,6 +281,7 @@ void AdicionarPrimeiroElemento(elemento **inicio, int valor, int i, int j){
     novoElemento -> proxElemento = (*inicio);
     (*inicio) = novoElemento;
 }
+
 //apaga a matriz passada como parametro
 void ApagarMatriz(elemento *inicio){
     elemento *proximo, *elemento;
