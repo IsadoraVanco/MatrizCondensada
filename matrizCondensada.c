@@ -4,15 +4,14 @@
 
 //sempre quadrada
 #define N 15
-#define NOME_ARQUIVO "matrizes.txt"
+#define NOME_ARQUIVO "matrizes3.txt"
 
-struct cel{
+typedef struct cel{
     int valor;
     int i;
     int j;
     struct cel* proxElemento;
-};
-typedef struct cel elemento;
+}elemento;
 
 elemento* LerMatriz(FILE *arquivo);
 void EscreverMatriz(elemento *inicio);
@@ -29,7 +28,6 @@ int main() {
     elemento* inicioC = NULL;
     elemento* inicioD = NULL;
     FILE *arquivo;
-    int elementosC;
     
     arquivo = fopen(NOME_ARQUIVO, "r");
     if(arquivo == NULL){
@@ -37,22 +35,26 @@ int main() {
         return 1;
     }
 
+    printf("\n*****A*****\n");
     inicioA = LerMatriz(arquivo);
+    EscreverMatriz(inicioA);
+    SomarElementosAbaixoDiagonal(inicioA);
+    
+    printf("\n*****B*****\n");
     inicioB = LerMatriz(arquivo);
+    EscreverMatriz(inicioB);
+    SomarElementosAbaixoDiagonal(inicioB);
+    
     fclose(arquivo);
     
-    printf("\n*****A*****\n");
-    EscreverMatriz(inicioA);
-    
-    printf("*****B*****\n");
-    EscreverMatriz(inicioB);
-    
-    printf("*****C*****\n");
+    printf("\n*****C*****\n");
     inicioC = SomarMatrizes(inicioA, inicioB);
-    elementosC = SomarElementosAbaixoDiagonal(inicioC);
+    SomarElementosAbaixoDiagonal(inicioC);
     
     printf("\n*****D*****\n");
     inicioD = MultiplicarMatrizes(inicioA, inicioB);
+    SomarElementosAbaixoDiagonal(inicioD);
+    printf("\n");
     
     ApagarMatriz(inicioA);
     ApagarMatriz(inicioB);
@@ -93,6 +95,18 @@ elemento* LerMatriz(FILE *arquivo){
 //escreve cada valor da matriz condensada em suas respectivas posições e a matriz completa
 void EscreverMatriz(elemento *inicio){
     elemento* aux = inicio;
+
+    //se o ponteiro não possui conteúdo, então é uma matriz nula
+    if(inicio == NULL){
+        for(int i = 0; i < N; i++){
+            for(int j = 0; j < N; j++){
+                printf("%d ", 0);
+            }
+            printf("\n");
+        }
+        printf("Matriz Nula.\n\n");
+        return;
+    }
     
     printf("Matriz Condensada:\n");
     //escreve a matriz condensada
@@ -126,25 +140,29 @@ void EscreverMatriz(elemento *inicio){
 //soma as duas matrizes, escreve o resultado e retorna o ponteiro do inicio da resultante
 elemento* SomarMatrizes(elemento *inicioA, elemento *inicioB){
     elemento *inicioC = NULL;
-    elemento *elementoAnterior, *novoElemento;
     int c;
 
     for(int i = 0; i < N; i++){
         for(int j = 0; j < N; j++){
             c = 0;
             
-            if(inicioA -> i == i && inicioA -> j == j){
-                c += inicioA -> valor;
-                if(inicioA -> proxElemento != NULL){
-                    inicioA = inicioA -> proxElemento;
+            // if(inicioA != NULL){
+                if(inicioA != NULL &&inicioA -> i == i && inicioA -> j == j){
+                    c += inicioA -> valor;
+                    if(inicioA -> proxElemento != NULL){
+                        inicioA = inicioA -> proxElemento;
+                    }
                 }
-            }
-            if(inicioB -> i == i && inicioB -> j == j){
-                c += inicioB -> valor;
-                if(inicioB -> proxElemento != NULL){
-                    inicioB = inicioB -> proxElemento;
+            // }
+
+            // if(inicioB != NULL){
+                if(inicioB != NULL && inicioB -> i == i && inicioB -> j == j){
+                    c += inicioB -> valor;
+                    if(inicioB -> proxElemento != NULL){
+                        inicioB = inicioB -> proxElemento;
+                    }
                 }
-            }
+            // }
 
             if(c != 0){
                 if(inicioC == NULL){
