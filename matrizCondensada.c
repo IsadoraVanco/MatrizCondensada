@@ -4,7 +4,7 @@
 
 //sempre quadrada
 #define N 15
-#define NOME_ARQUIVO "matrizes3.txt"
+#define NOME_ARQUIVO "matrizes5.txt"
 
 typedef struct cel{
     int valor;
@@ -67,17 +67,13 @@ int main() {
 //guarda a matriz já condensada e retorna o ponteiro do inicio
 elemento* LerMatriz(FILE *arquivo){
     elemento *inicio = NULL;
-    char linha[N + 1];
     int n;
     
     //considere a matriz sem erros!
-    for(int i = 0; i < N; i++){
-        //le com ou sem uma linha separando (espaço)
-        fscanf(arquivo, "%s\n", linha);
-        
+    for(int i = 0; i < N; i++){        
         for(int j = 0; j < N; j++){
-            //transforma o caractere em inteiro
-            n = linha[j] - '0';
+            //le como um inteiro
+            fscanf(arquivo, "%d", &n);
             if(n != 0){
                 if(inicio == NULL){
                     AdicionarPrimeiroElemento(&inicio, n, i, j);
