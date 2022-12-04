@@ -3,7 +3,7 @@
 
 //sempre quadrada
 #define N 15
-#define NOME_ARQUIVO "matrizes3.txt"
+#define NOME_ARQUIVO "matrizes.txt"
 
 typedef struct cel{
     int valor;
