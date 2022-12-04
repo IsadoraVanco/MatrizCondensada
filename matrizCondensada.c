@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 //sempre quadrada
 #define N 15
-#define NOME_ARQUIVO "matrizes.txt"
+#define NOME_ARQUIVO "matrizes3.txt"
 
 typedef struct cel{
     int valor;
@@ -37,33 +36,37 @@ int main() {
         return 1;
     }
 
-    printf("\n*****A*****\n");
+    printf("\n********** MATRIZ A **********\n");
     inicioA = LerMatriz(arquivo);
     EscreverMatriz(inicioA);
     totalElementosDiagonal += SomarElementosAbaixoDiagonal(inicioA);
     
-    printf("\n*****B*****\n");
+    printf("\n********** MATRIZ B **********\n");
     inicioB = LerMatriz(arquivo);
     EscreverMatriz(inicioB);
     totalElementosDiagonal += SomarElementosAbaixoDiagonal(inicioB);
     
     fclose(arquivo);
     
-    printf("\n*****C*****\n");
+    printf("\n********** MATRIZ C **********\n");
+    printf("=> C = A + B\n");
     inicioC = SomarMatrizes(inicioA, inicioB);
     totalElementosDiagonal += SomarElementosAbaixoDiagonal(inicioC);
     
-    printf("\n*****D*****\n");
+    printf("\n********** MATRIZ D **********\n");
+    printf("=> D = A * B\n");
     inicioD = MultiplicarMatrizes(inicioA, inicioB);
     totalElementosDiagonal += SomarElementosAbaixoDiagonal(inicioD);
     
-    printf("\nA soma de todas as soma de elementos abaixo da diagonal calculados eh de %d.\n", totalElementosDiagonal);
+    printf("\n******************************\n");
+    printf("\nA soma de todas as somas de\nelementos abaixo da diagonal\neh de %d.\n", totalElementosDiagonal);
     printf("\n");
 
     ApagarMatriz(inicioA);
     ApagarMatriz(inicioB);
     ApagarMatriz(inicioC);
     ApagarMatriz(inicioD);
+    printf("Matrizes apagadas.\n");
     
     return 0;
 }
@@ -96,19 +99,11 @@ elemento* LerMatriz(FILE *arquivo){
 void EscreverMatriz(elemento *inicio){
     elemento* aux = inicio;
 
-    //se o ponteiro não possui conteúdo, então é uma matriz nula
-    if(inicio == NULL){
-        for(int i = 0; i < N; i++){
-            for(int j = 0; j < N; j++){
-                printf("%d ", 0);
-            }
-            printf("\n");
-        }
-        printf("Matriz Nula.\n\n");
-        return;
-    }
-    
     printf("Matriz Condensada:\n");
+    //se for uma matriz nula
+    if(inicio == NULL){
+        printf("Nao possui elementos.\n");
+    }
     //escreve a matriz condensada
     while(inicio != NULL){
         printf("%d [%d, %d]\n", inicio -> valor, inicio -> i + 1, inicio -> j + 1);
@@ -120,6 +115,18 @@ void EscreverMatriz(elemento *inicio){
     inicio = aux;
 
     printf("Matriz Completa:\n");
+    //se o ponteiro não possui conteúdo, então é uma matriz nula
+    if(inicio == NULL){
+        for(int i = 0; i < N; i++){
+            for(int j = 0; j < N; j++){
+                printf("%d ", 0);
+            }
+            printf("\n");
+        }
+        printf("\n");
+        return;
+    }
+
     //escreve a matriz inteira (com elementos 0)
     for(int i = 0; i < N; i++){
         for(int j = 0; j < N; j++){
@@ -146,23 +153,19 @@ elemento* SomarMatrizes(elemento *inicioA, elemento *inicioB){
         for(int j = 0; j < N; j++){
             c = 0;
             
-            // if(inicioA != NULL){
-                if(inicioA != NULL &&inicioA -> i == i && inicioA -> j == j){
-                    c += inicioA -> valor;
-                    if(inicioA -> proxElemento != NULL){
-                        inicioA = inicioA -> proxElemento;
-                    }
+            if(inicioA != NULL &&inicioA -> i == i && inicioA -> j == j){
+                c += inicioA -> valor;
+                if(inicioA -> proxElemento != NULL){
+                    inicioA = inicioA -> proxElemento;
                 }
-            // }
+            }
 
-            // if(inicioB != NULL){
-                if(inicioB != NULL && inicioB -> i == i && inicioB -> j == j){
-                    c += inicioB -> valor;
-                    if(inicioB -> proxElemento != NULL){
-                        inicioB = inicioB -> proxElemento;
-                    }
+            if(inicioB != NULL && inicioB -> i == i && inicioB -> j == j){
+                c += inicioB -> valor;
+                if(inicioB -> proxElemento != NULL){
+                    inicioB = inicioB -> proxElemento;
                 }
-            // }
+            }
 
             if(c != 0){
                 if(inicioC == NULL){
@@ -249,7 +252,7 @@ int SomarElementosAbaixoDiagonal(elemento *inicio){
         }
     }
 
-    printf("O resultado da soma de todos os elementos abaixo da diagonal principal da matriz eh %d.\n", resultado);
+    printf("O resultado da soma de todos\nos elementos abaixo da diagonal\nprincipal da matriz eh %d.\n", resultado);
     return resultado;
 }
 
@@ -300,5 +303,4 @@ void ApagarMatriz(elemento *inicio){
     }
     //aterra o ponteiro do inicio
     inicio = NULL;
-    printf("Matriz apagada.\n");
 }
